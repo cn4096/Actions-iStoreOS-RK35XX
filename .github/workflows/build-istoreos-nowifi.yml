@@ -21,8 +21,11 @@ env:
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
+  UPLOAD_ToAlist: true
   TZ: Asia/Shanghai
-  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ALIST_TOKEN: ${{ secrets.ALIST_TOKEN }}
+  ALIST_URL: ${{ secrets.ALIST_URL }}
 
 jobs:
   build:
@@ -58,6 +61,16 @@ jobs:
         echo -e "磁盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
         echo "------------------------------- 磁盘详情 -------------------------------\n"
         df -Th
+        echo "-------------------------Tokens Ready----------------------"
+        echo "GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}"
+        echo "ALIST_URL: ${{ env.ALIST_URL }}"
+        echo "ALIST_TOKEN: ${{ env.ALIST_TOKEN }}"
+        echo "----------测试上传文件------------"        
+        file="/tmp/ActionLogs.txt"
+        echo "开始编译固件:$(date +'%Y-%m-%d %H:%M:%S')" >> $file
+        curl -s -S -T $file http://${{ env.ALIST_URL }}/dav/actions/istoreOS/nsy-bdy/$(date +%Y%m%d)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
+        echo "  "
+        echo "---------测试上传文件完毕------------"        
 
     - name: 初始化编译环境
       env:
@@ -172,7 +185,14 @@ jobs:
       with:
         name: OpenWrt_firmware${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
-
+        
+    - name: 固件回国Alist
+      id: UploadToAList
+      if: env.UPLOAD_ToAlist == 'true' && !cancelled()
+      run: |
+        cd openwrt/bin/targets/*/*
+        ls -l
+        echo "=========准备搬回国内==========="
     - name: 生成发布标签
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
