@@ -21,7 +21,7 @@ env:
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
-  UPLOAD_ToAlist: true
+  UPLOAD_ToAlist: false
   TZ: Asia/Shanghai
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ALIST_TOKEN: ${{ secrets.ALIST_TOKEN }}
