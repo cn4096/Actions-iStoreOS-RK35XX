@@ -68,12 +68,8 @@ jobs:
         echo "----------测试上传文件------------"        
         file="/tmp/ActionLogs.txt"
         echo "开始编译固件:$(date +'%Y-%m-%d %H:%M:%S')" >> $file
-        echo "abc" >/tmp/abc.txt
-        echo "efg" >/tmp/efg.txt
-        echo "hij" >/tmp/hij.txt
-        find /tmp -type f -name "*.txt" -print0 | xargs -0 -I {} curl -s -S --max-time 120 -T {} http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/$(date +%Y%m%d)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
-        echo "-------------test done!------------"
-        #curl -s -S --max-time 120 -T $file http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/$(date +%Y%m%d)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
+        #find /tmp -type f -name "*.txt" -print0 | xargs -0 -I {} curl -s -S --max-time 120 -T {} http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/$(date +%Y%m%d)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
+        curl -s -S --max-time 120 -T $file http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/week_$(date +%W)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
         echo "  "
         echo "---------测试上传文件完毕------------"        
 
@@ -203,8 +199,8 @@ jobs:
         echo "Alist WebDav密码: ${{ env.ALIST_TOKEN }}"
         file="/tmp/ActionLogs.txt"
         echo "固件编译完成:$(date +'%Y-%m-%d %H:%M:%S')" >> $file
-        curl -s -S -T $file http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/$(date +%Y%m%d)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
- 
+        curl -s -S -T $file http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/week_$(date +%W)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
+        find ./ -type f -name "*.gz" -print0 | xargs -0 -I {} curl -s -S --max-time 1200 -T {} http://${{ env.ALIST_URL }}/dav/actions/istoreOS/RK35xx/week_$(date +%W)/ -u ${{ env.ALIST_TOKEN }}:${{ env.ALIST_TOKEN }}
     - name: 生成发布标签
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
